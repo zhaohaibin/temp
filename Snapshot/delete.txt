@@ -1,0 +1,6 @@
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\2015_05_13 16_52_54-db_snapshot.txt
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\2015_05_13 16_52_54-lc_snapshot.txt
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\2015_05_13 16_52_54-re_snapshot.txt
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\kuaipan.aps
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\kuaipan.vcxproj.user
+\bizpc\kuaipan\XLiveShell\Windows\kuaipan\restore.dat
