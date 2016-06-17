@@ -18,21 +18,3 @@ namespace kingfile
 		bool enum_directory(const string& directory, vector<xfile_shared_ptr>& subItemsVec, std::string& strError);
 	}
 }
-
-// class FileSystemHelper
-// {
-// protected:
-// 	FileSystemHelper(void);
-// public:
-// 	~FileSystemHelper(void);
-// 
-// public:
-// 	static xfile_shared_ptr fileInfo(const std::string& path);
-// 	static bool directoryEnumSubItemsSet(const string& directory, vector<xfile_shared_ptr>& subItemsVec, std::string& strError);
-// private:
-// 	static bool directorySubItemsSet(const std::string& path, 
-// 		vector<xfile_shared_ptr>& subItemsVec, 
-// 		std::deque<xfile_shared_ptr>& subFolderQueue,
-// 		std::string& strError);
-// };
-
