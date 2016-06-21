@@ -41,7 +41,11 @@ namespace kingfile
 				std::replace(spXfile->m_path.begin(), spXfile->m_path.end(), '\\', '/');
 				int pos = spXfile->m_path.rfind('/');
 				spXfile->m_name = path.substr(pos+1,path.size()-pos-1);
-				spXfile->m_mtime = boost::filesystem::last_write_time(path);
+				time_t mtime = boost::filesystem::last_write_time(spXfile->m_path);
+				if(mtime < 0)
+					spXfile->m_mtime = 0;
+				else
+					spXfile->m_mtime = mtime;
 			}catch(boost::filesystem::filesystem_error error)
 			{
 				spXfile.reset();

@@ -129,23 +129,27 @@ void Snapshot::_filterLocalAddAndUpdate(shared_ptr<directory_tree::node> spLocal
 		{
 			if(spLocalXfile->m_mtime != spLastXfile->m_mtime)
 			{
-				spChangeXfiles->m_updateXfile.push_back(spLocalXfile);
+				spChangeXfiles->push_to_update(spLocalXfile);
+				//spChangeXfiles->m_updateXfile.push_back(spLocalXfile);
 				return;
 			}
 
 			if(spLocalXfile->m_size != spLocalXfile->m_size)
 			{
-				spChangeXfiles->m_updateXfile.push_back(spLocalXfile);
+				spChangeXfiles->push_to_update(spLocalXfile);
+				//spChangeXfiles->m_updateXfile.push_back(spLocalXfile);
 				return;
 			}
 		}else
 		{
-			spChangeXfiles->m_addXfile.push_back(spLocalXfile);
+			spChangeXfiles->push_to_add(spLocalXfile);
+			//spChangeXfiles->m_addXfile.push_back(spLocalXfile);
 		}
 		
 	}else
 	{
-		spChangeXfiles->m_addXfile.push_back(spLocalNode->file());
+		spChangeXfiles->push_to_add(spLocalNode->file());
+		//spChangeXfiles->m_addXfile.push_back(spLocalNode->file());
 	}
 }
 
@@ -157,10 +161,12 @@ void Snapshot::_filterLocalDelete(shared_ptr<directory_tree::node> spLastNode, s
 		xfile_shared_ptr spLocalXfile = spLocalNode->file();
 		xfile_shared_ptr spLastXfile = spLastNode->file();
 		if(spLocalXfile->is_directory() != spLastXfile->is_directory())
-			spChangeXfiles->m_deleteXfile.push_back(spLastXfile);
+			spChangeXfiles->push_to_delete(spLastXfile);
+			//spChangeXfiles->m_deleteXfile.push_back(spLastXfile);
 	}else
 	{
-		spChangeXfiles->m_deleteXfile.push_back(spLastNode->file());
+		spChangeXfiles->push_to_delete(spLastNode->file());
+		//spChangeXfiles->m_deleteXfile.push_back(spLastNode->file());
 	}		
 }
 
@@ -177,14 +183,17 @@ void Snapshot::_filterRemoteAddAndUpdateXfile( shared_ptr<directory_tree::node> 
 		if(!spXfile_L->is_directory() && !spXfile_R->is_directory())
 		{
 			if(spXfile_L->m_sha1 != spXfile_R->m_sha1)
-				spChangeXfiles->m_updateXfile.push_back(spXfile_L);
+				spChangeXfiles->push_to_update(spXfile_L);
+				//spChangeXfiles->m_updateXfile.push_back(spXfile_L);
 		}else
 		{
-			spChangeXfiles->m_addXfile.push_back(spXfile_L);
+			spChangeXfiles->push_to_add(spXfile_L);
+			//spChangeXfiles->m_addXfile.push_back(spXfile_L);
 		}
 	}else
 	{
-		spChangeXfiles->m_addXfile.push_back(spNode_L->file());
+		spChangeXfiles->push_to_add(spNode_L->file());
+		//spChangeXfiles->m_addXfile.push_back(spNode_L->file());
 	}
 }
 
@@ -197,11 +206,13 @@ void Snapshot::_filterRemoteDeleteXfile( shared_ptr<directory_tree::node> spLast
 		xfile_shared_ptr spRemoteXfile = spRemoteNode->file();
 		if(spLastXfile->is_directory() != spRemoteXfile->is_directory())
 		{
-			spChangeXfiles->m_deleteXfile.push_back(spLastXfile);
+			spChangeXfiles->push_to_delete(spLastXfile);
+			//spChangeXfiles->m_deleteXfile.push_back(spLastXfile);
 		}
 	}else
 	{
-		spChangeXfiles->m_deleteXfile.push_back(spLastNode->file());
+		spChangeXfiles->push_to_delete(spLastNode->file());
+		//spChangeXfiles->m_deleteXfile.push_back(spLastNode->file());
 	}
 }
 

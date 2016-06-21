@@ -13,9 +13,31 @@ using namespace kingfile::filesystem;
 
 struct change_xfiles
 {
+	void push_to_add(xfile_shared_ptr spXfile)
+	{
+		if(spXfile->is_directory())
+			m_addFolder.push_back(spXfile);
+		else
+			m_addXfile.push_back(spXfile);
+	}
+
+	void push_to_update(xfile_shared_ptr spXfile)
+	{
+		m_updateXfile.push_back(spXfile);
+	}
+
+	void push_to_delete(xfile_shared_ptr spXfile)
+	{
+		if(spXfile->is_directory())
+			m_deleteFolder.push_back(spXfile);
+		else
+			m_deleteXfile.push_back(spXfile);
+	}
 	vector<xfile_shared_ptr> m_addXfile;
+	vector<xfile_shared_ptr> m_addFolder;
 	vector<xfile_shared_ptr> m_updateXfile;
 	vector<xfile_shared_ptr> m_deleteXfile;
+	vector<xfile_shared_ptr> m_deleteFolder;
 };
 
 class Snapshot

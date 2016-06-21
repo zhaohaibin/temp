@@ -42,12 +42,9 @@ void filterLocalChange()
 	std::shared_ptr<change_xfiles> spChangeFiles(new change_xfiles());
 	snapshot.filterLocalChange(spChangeFiles);
 
-	writeFile("add.txt", spChangeFiles->m_addXfile);
-	writeFile("update.txt", spChangeFiles->m_updateXfile);
-	writeFile("delete.txt", spChangeFiles->m_deleteXfile);
-
-	cout << "本地新增文件"<<spChangeFiles->m_addXfile.size() << "  本地更新文件"<<spChangeFiles->m_updateXfile.size();
-	cout << "本地删除文件"<<spChangeFiles->m_deleteXfile.size() << endl;
+	cout << "lc: 新增文件 " << spChangeFiles->m_addXfile.size() << "新增文件夹" << spChangeFiles->m_addFolder.size();
+	cout << " 更新文件" << spChangeFiles->m_updateXfile.size() << " 删除文件" << spChangeFiles->m_deleteXfile.size();
+	cout << " 删除文件夹" << spChangeFiles->m_deleteFolder.size()<< endl;
 }
 
 void copyFile(const string& targetPath)
@@ -57,41 +54,25 @@ void copyFile(const string& targetPath)
 
 int main()
 {
-	int write_db;
-	cin >>write_db;
-
-	loadSnapShot();
+	//loadSnapShot();
 	//copyFile("D:/target");
-	if(write_db == 1)
-	{
-		localSnapshotWriteToDb();
-		
-	}
 
 	for(int i = 0; i < 1000; ++i)
 	{
+		int n;
+		cin >>n;
+		if(n == 3)
+			break;
 		cout << "第"<<(i+1) <<"次"<<endl;
-		filterLocalChange();
-// 		int reFilter = 0;
-// 		cin >> reFilter;
-// 		if(reFilter == 0)
-// 		{
-// 			break;
-// 		}
 		loadSnapShot();
-
+		filterLocalChange();
+		if(n == 1)
+		{
+			localSnapshotWriteToDb();
+		}
 		Sleep(100);
-		//if(reFilter == 2)
-		//	localSnapshotWriteToDb();
 	}
-	
 
-// 	cout << "检查目录树是否正确"<<endl;
-// 	snapshot.checkDirTree();
-
-//	cout << "测试查找功能"  <<endl;
-//	snapshot.checkFind();
-//	vector<xfile_shared_ptr> xfileVec;
 	snapshot.clear();
 	int n;
 	cin >>n;

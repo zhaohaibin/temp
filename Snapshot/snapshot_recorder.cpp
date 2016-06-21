@@ -73,24 +73,32 @@ void snapshot_recorder::record_server_snapshot( map<uint64_t, xfile_shared_ptr>&
 
 void snapshot_recorder::record_local_changes( shared_ptr<change_xfiles> spChanges )
 {
-	string local_add_path = m_recordPath + "/change_local_add.txt";
-	string local_update_path = m_recordPath + "/change_local_update.txt";
-	string local_delete_path = m_recordPath + "/change_local_delete.txt";
+	string local_add_path = m_recordPath + "/change_local_add_file.txt";
+	string local_add_folder_path = m_recordPath + "/change_local_add_folder.txt";
+	string local_update_path = m_recordPath + "/change_local_update_file.txt";
+	string local_delete_path = m_recordPath + "/change_local_delete_file.txt";
+	string local_delete_folder_path = m_recordPath + "/change_local_delete_folder.txt";
 
 	_write(local_add_path, spChanges->m_addXfile);
+	_write(local_add_folder_path, spChanges->m_addFolder);
 	_write(local_update_path, spChanges->m_updateXfile);
 	_write(local_delete_path, spChanges->m_deleteXfile);
+	_write(local_delete_folder_path, spChanges->m_deleteFolder);
 }
 
 void snapshot_recorder::record_server_changes( shared_ptr<change_xfiles> spChanges )
 {
-	string server_add_path = m_recordPath + "/change_server_add.txt";
-	string server_update_path = m_recordPath + "/change_server_update.txt";
-	string server_delete_path = m_recordPath + "/change_server_delete.txt";
+	string server_add_path = m_recordPath + "/change_server_add_file.txt";
+	string server_add_folder_path = m_recordPath + "/change_server_add_folder.txt";
+	string server_update_path = m_recordPath + "/change_server_update_file.txt";
+	string server_delete_path = m_recordPath + "/change_server_delete_file.txt";
+	string server_delete_folder_path = m_recordPath + "/change_server_delete_folder.txt";
 
 	_write(server_add_path, spChanges->m_addXfile);
+	_write(server_add_folder_path, spChanges->m_addFolder);
 	_write(server_update_path, spChanges->m_updateXfile);
 	_write(server_delete_path, spChanges->m_deleteXfile);
+	_write(server_delete_folder_path, spChanges->m_deleteFolder);
 }
 
 void snapshot_recorder::_write( const std::string& path, vector<xfile_shared_ptr>& xfiles )
