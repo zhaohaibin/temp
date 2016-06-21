@@ -23,59 +23,78 @@ Snapshot::~Snapshot(void)
 {
 }
 
-void Snapshot::loadSnapShot()
+bool Snapshot::loadSnapShot(string& error)
 {
+	bool ret = true;
 	m_snapshotRecorder.make_record_path();
-	_loadLocalSnapshot();
-	_loadLastSnapshot();
+	ret = _loadLocalSnapshot(error);
+	if(ret == false)
+		return ret;
+
+	ret = _loadLastSnapshot(error);
+
+	return ret;
 }
 
-void Snapshot::_loadLocalSnapshot()
+bool Snapshot::_loadLocalSnapshot(string& error)
 {
-	cout << "开始构建本地快照" <<endl;
 	m_spLocalTree->clear();
-	time_t start = time(0);
-	string strError;
+
 	vector<xfile_shared_ptr> localXfileVec;
-	bool ret = enum_directory(m_rootPath, localXfileVec, strError);
+	bool ret = enum_directory(m_rootPath, localXfileVec, error);
+	if(ret == false)
+		return ret;
+
 	m_snapshotRecorder.record_local_snapshot(localXfileVec);
-	cout << "枚举完成用时："<<time(0) - start << endl;
-	
-	start = time(0);
 	for(int i = 0; i < localXfileVec.size(); ++i)
 	{
 		string path = _formatePath(localXfileVec[i]->m_path);
 		localXfileVec[i]->m_path = path;
-		m_spLocalTree->insert(localXfileVec[i]);
+		if( m_spLocalTree->insert(localXfileVec[i]) == false )
+		{
+			ret = false;
+			error = "构建目录树失败没有找到父节点：" + localXfileVec[i]->m_path;
+			return ret;
+		}
 	}
- 	time_t endTime = time(0);
- 	cout << "目录树构建完成用时：" << endTime - start << endl; 
+	_set_space_type(m_spLocalTree);
+	return ret;
 }
 
-void Snapshot::_loadLastSnapshot()
+bool Snapshot::_loadLastSnapshot(string& error)
 {
-	cout << "开始构建last 快照" <<endl;
+	bool ret = true;
 	m_spLastTree->clear();
-	time_t start = time(0);
+	
 	vector<boost::any> dataVec;
 	shared_ptr<db_table> spSnapshot = m_db.getTable(TABLE_SNAPSHOT);
-	spSnapshot->read_all(dataVec);
+	if( spSnapshot->read_all(dataVec) != 0 )
+	{
+		error = "从数据库中读取数据时发生错误";
+		ret = false;
+	}
+
 	m_snapshotRecorder.record_last_snapshot(dataVec);
 	for(int i = 0; i < dataVec.size(); ++i)
 	{
-		m_spLastTree->insert(boost::any_cast<xfile_shared_ptr>(dataVec[i]));
+		ret = m_spLastTree->insert(boost::any_cast<xfile_shared_ptr>(dataVec[i]));
+		if(ret == false)
+		{
+			error = "构建目录树失败没有找到父节点：" + boost::any_cast<xfile_shared_ptr>(dataVec[i])->m_path;
+		}
 	}
-	cout << "last快照构建完成用时："<<time(0) - start <<endl;
+	return ret;
 }
 
-void Snapshot::_loadServerSnapshot()
+bool Snapshot::_loadServerSnapshot(string& error)
 {
-	cout << "开始构建服务器端快照" <<endl;
+	bool ret = true;
 	map<uint64_t, xfile_shared_ptr> xfiles;
 	m_snapshotRecorder.record_server_snapshot(xfiles);
 	shared_ptr<server_directory_tree> spServerTree(new server_directory_tree());
 	spServerTree->init(xfiles);
 	m_spServerTree = directory_helper::conv_to_directory_tree(spServerTree);
+	return ret;
 }
 
 std::string Snapshot::_formatePath( const string& path )
@@ -261,4 +280,30 @@ void Snapshot::clear()
 	m_spLocalTree->clear();
 	m_spLastTree->clear();
 	m_spServerTree->clear();
+}
+
+void Snapshot::_set_space_type( shared_ptr<directory_tree> spTree )
+{
+	directory_tree::node_subitems_type subitems = spTree->root_subitems();
+	directory_tree::node_subitems_type::iterator it = subitems.begin();
+	for( ; it != subitems.end(); ++it)
+	{
+		if(it->second->file()->m_name == PUBLIC)
+		{
+			it->second->file()->m_space_type = SPACE_PUBLIC;
+		}else if(it->second->file()->m_name == PRIVATE)
+		{
+			it->second->file()->m_space_type = SPACE_PRIVATE;
+		}
+	}
+	spTree->for_each(std::bind(&Snapshot::_set_directory_node_space_type, this, std::placeholders::_1));
+}
+
+void Snapshot::_set_directory_node_space_type( shared_ptr<directory_tree::node> spNode )
+{
+	shared_ptr<directory_tree::node> spParent = spNode->parent();
+	if(spParent->parent())
+	{
+		spNode->file()->m_space_type = spParent->file()->m_space_type;
+	}
 }

@@ -1,8 +1,8 @@
 #include "db_snapshot_table.h"
 
-#define tabCreateSql "CREATE TABLE IF NOT EXISTS snapshot ( local_path VARCHAR (260) PRIMARY KEY, name VARCHAR (260), type INT, size INTEGER, xid INTEGER, pxid INTEGER, version INTEGER, sha1 VARCHAR (42), mtime DATETIME, opver INTEGER)"
+#define tabCreateSql "CREATE TABLE IF NOT EXISTS snapshot ( local_path VARCHAR (260) PRIMARY KEY, space_type INT, name VARCHAR (260), type INT, role INT, size INTEGER, xid INTEGER, pxid INTEGER, version INTEGER, sha1 VARCHAR (42), mtime DATETIME, opver INTEGER)"
 #define tableClearSql "delete from snapshot"
-#define tableInsertSql "insert into snapshot ( local_path, name, type, size, xid, pxid, version, sha1, mtime, opver) values ('%s', '%s', %d, %llu, %llu, %llu, %llu, '%s', %llu, %llu)"
+#define tableInsertSql "insert into snapshot ( local_path, space_type, name, type, role, size, xid, pxid, version, sha1, mtime, opver) values ('%s', %d, '%s', %d, %d, %llu, %llu, %llu, %llu, '%s', %llu, %llu)"
 db_snapshot_table::db_snapshot_table(sqlit_db& db)
 	: db_table(db)
 {
@@ -45,8 +45,10 @@ std::string db_snapshot_table::_insert_sql( xfile_shared_ptr spXfile )
 	char buffer[2048];
 	sprintf(buffer, tableInsertSql,
 		spXfile->m_path.c_str(), 
+		spXfile->m_space_type,
 		spXfile->m_name.c_str(), 
 		spXfile->m_type,
+		spXfile->m_role,
 		spXfile->m_size,
 		spXfile->m_xid,
 		spXfile->m_pxid,
@@ -65,8 +67,10 @@ int db_snapshot_table::_read( const string sql, vector<boost::any>& dataVec )
 		xfile_shared_ptr spXfile(new xfile());
 		while( m_db.fetch_row(
 			spXfile->m_path,
+			spXfile->m_space_type,
 			spXfile->m_name,
 			(int&)spXfile->m_type, 
+			spXfile->m_role,
 			spXfile->m_size,
 			spXfile->m_xid,
 			spXfile->m_pxid,

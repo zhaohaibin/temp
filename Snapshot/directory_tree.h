@@ -11,17 +11,20 @@ namespace kingfile
 		{
 		public:
 			typedef directory_tree_node<string> node;
+			typedef map<string, std::shared_ptr<node>> node_subitems_type;
 		public:
 			directory_tree(void);
 			~directory_tree(void);
 
 		public:
-			void insert(shared_ptr<xfile> spXfile);
+			bool insert(shared_ptr<xfile> spXfile);
 			void erase(shared_ptr<xfile> spXfile);
 			void clear();
 			void for_each(std::function<void(shared_ptr<node>)> func);
 			shared_ptr<node> find_parent(shared_ptr<xfile> spXfile);
 			shared_ptr<node> find(const string& path);
+
+			map<string, std::shared_ptr<node>> root_subitems();
 		private:
 			shared_ptr<node> _find(const string& path);
 			void _for_each(shared_ptr<node> spRoot, std::function<void(shared_ptr<node>)> func);

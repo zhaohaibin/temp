@@ -17,11 +17,17 @@ namespace kingfile
 		{
 		}
 
-		void directory_tree::insert( shared_ptr<xfile> spXfile )
+		bool directory_tree::insert( shared_ptr<xfile> spXfile )
 		{
+			bool ret = false;
 			shared_ptr<directory_tree::node> spParent = find_parent(spXfile);
-			shared_ptr<directory_tree::node> spNode = directory_tree::node::create(spParent, spXfile);
-			spParent->insert_sub_node(spNode->file()->m_path, spNode);
+			if(spParent)
+			{
+				shared_ptr<directory_tree::node> spNode = directory_tree::node::create(spParent, spXfile);
+				spParent->insert_sub_node(spNode->file()->m_path, spNode);
+				ret = true;
+			}
+			return false;
 		}
 
 		void directory_tree::erase( shared_ptr<xfile> spXfile )
@@ -131,6 +137,11 @@ namespace kingfile
 		void directory_tree::_unparent( shared_ptr<directory_tree::node> spNode )
 		{
 			spNode->reset_parent();
+		}
+
+		map<string, std::shared_ptr<directory_tree::node>> directory_tree::root_subitems()
+		{
+			return m_spRoot->sub_items();
 		}
 	}
 }

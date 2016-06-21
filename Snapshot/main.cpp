@@ -10,7 +10,8 @@ Snapshot snapshot;
 
 void loadSnapShot()
 {
-	snapshot.loadSnapShot();
+	string error;
+	snapshot.loadSnapShot(error);
 }
 
 void localSnapshotWriteToDb()

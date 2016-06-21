@@ -15,6 +15,7 @@ namespace kingfile
 			, m_xid(0)
 			, m_pxid(0)
 			, m_type(XFILE_FOLDER)
+			, m_role(file_role::EKP_FILE_ROLE_UNKOWN)
 		{
 		}
 
@@ -60,16 +61,18 @@ namespace kingfile
 
 		void xfile::to_json( Json::Value& jobj )
 		{
-			jobj["name"]		= m_name;
-			jobj["path"]		= m_path;
-			jobj["size"]		= m_size;
-			jobj["mtime"]	= m_mtime;
-			jobj["version"]	= m_version;
-			jobj["opver"]		= m_opVer;
-			jobj["xid"]			= m_xid;
-			jobj["pxid"]		= m_pxid;
-			jobj["type"]		= m_type;
-			jobj["sha1"]		= m_sha1;
+			jobj["name"]				= m_name;
+			jobj["path"]				= m_path;
+			jobj["size"]				= m_size;
+			jobj["mtime"]			= m_mtime;
+			jobj["version"]			= m_version;
+			jobj["opver"]				= m_opVer;
+			jobj["xid"]					= m_xid;
+			jobj["pxid"]				= m_pxid;
+			jobj["type"]				= m_type;
+			jobj["sha1"]				= m_sha1;
+			jobj["role"]				= m_role;
+			jobj["space_type"]		= m_space_type;
 		}
 
 	}

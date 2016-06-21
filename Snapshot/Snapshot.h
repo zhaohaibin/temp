@@ -10,7 +10,8 @@
 #include "snapshot_recorder.h"
 using namespace kingfile::filesystem;
 
-
+#define PRIVATE	"个人空间"
+#define PUBLIC		"共享空间"
 struct change_xfiles
 {
 	void push_to_add(xfile_shared_ptr spXfile)
@@ -47,7 +48,7 @@ public:
 	~Snapshot(void);
 
 public:
-	void loadSnapShot();
+	bool loadSnapShot(string& error);
 	void clear();
 	void copyLocalFile(const string& path);
 
@@ -57,9 +58,9 @@ public:
 	void snapshotWriteToDb();
 
 private:
-	void _loadLocalSnapshot();
-	void _loadLastSnapshot();
-	void _loadServerSnapshot();
+	bool _loadLocalSnapshot(string& error);
+	bool _loadLastSnapshot(string& error);
+	bool _loadServerSnapshot(string& error);
 
 	string _formatePath(const string& path);
 
@@ -72,6 +73,9 @@ private:
 	void _copyFile(const string& path, shared_ptr<directory_tree_node<string>> spNode);
 
 	void _convertToVec(shared_ptr<directory_tree::node> spNode, shared_ptr<vector<xfile_shared_ptr>>& spXfileVec);
+
+	void _set_space_type(shared_ptr<directory_tree> spTree);
+	void _set_directory_node_space_type(shared_ptr<directory_tree::node> spNode);
 private:
 	string	m_rootPath;
 	shared_ptr<directory_tree> m_spLocalTree;
