@@ -7,6 +7,7 @@
 #include "xfile.h"
 #include "directory_tree.h"
 #include "db/user_db.h"
+#include "snapshot_recorder.h"
 using namespace kingfile::filesystem;
 
 
@@ -36,22 +37,24 @@ public:
 private:
 	void _loadLocalSnapshot();
 	void _loadLastSnapshot();
+	void _loadServerSnapshot();
 
 	string _formatePath(const string& path);
 
-	void _filterLocalAddAndUpdate(shared_ptr<directory_tree_node> spLocalNode, shared_ptr<change_xfiles> spChangeXfiles );
-	void _filterLocalDelete(shared_ptr<directory_tree_node> spLastNode, shared_ptr<change_xfiles> spChangeXfiles );
+	void _filterLocalAddAndUpdate(shared_ptr<directory_tree_node<string>> spLocalNode, shared_ptr<change_xfiles> spChangeXfiles );
+	void _filterLocalDelete(shared_ptr<directory_tree_node<string>> spLastNode, shared_ptr<change_xfiles> spChangeXfiles );
 
-	void _filterRemoteAddAndUpdateXfile(shared_ptr<directory_tree_node> spNode_L, shared_ptr<change_xfiles> spChangeXfiles );
-	void _filterRemoteDeleteXfile(shared_ptr<directory_tree_node> spLastNode, shared_ptr<change_xfiles> spChangeXfiles );
+	void _filterRemoteAddAndUpdateXfile(shared_ptr<directory_tree_node<string>> spNode_L, shared_ptr<change_xfiles> spChangeXfiles );
+	void _filterRemoteDeleteXfile(shared_ptr<directory_tree_node<string>> spLastNode, shared_ptr<change_xfiles> spChangeXfiles );
 
-	void _copyFile(const string& path, shared_ptr<directory_tree_node> spNode);
+	void _copyFile(const string& path, shared_ptr<directory_tree_node<string>> spNode);
 
-	void _convertToVec(shared_ptr<directory_tree_node> spNode, shared_ptr<vector<xfile_shared_ptr>>& spXfileVec);
+	void _convertToVec(shared_ptr<directory_tree::node> spNode, shared_ptr<vector<xfile_shared_ptr>>& spXfileVec);
 private:
 	string	m_rootPath;
-	directory_tree m_localTree;
-	directory_tree m_lastTree;
-	directory_tree m_remoteTree;
+	shared_ptr<directory_tree> m_spLocalTree;
+	shared_ptr<directory_tree> m_spLastTree;
+	shared_ptr<directory_tree> m_spServerTree;
 	user_db m_db;
+	snapshot_recorder m_snapshotRecorder;
 };

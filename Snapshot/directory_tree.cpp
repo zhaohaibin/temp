@@ -7,7 +7,7 @@ namespace kingfile
 	namespace filesystem
 	{
 		directory_tree::directory_tree(void)
-			: m_spRoot(new directory_tree_node())
+			: m_spRoot(new directory_tree::node())
 		{
 			shared_ptr<xfile> spXfile(new xfile());
 			m_spRoot->set_xfile(spXfile);
@@ -19,14 +19,14 @@ namespace kingfile
 
 		void directory_tree::insert( shared_ptr<xfile> spXfile )
 		{
-			shared_ptr<directory_tree_node> spParent = find_parent(spXfile);
-			shared_ptr<directory_tree_node> spNode = directory_tree_node::create(spParent, spXfile);
-			spParent->insert_sub_node(spNode);
+			shared_ptr<directory_tree::node> spParent = find_parent(spXfile);
+			shared_ptr<directory_tree::node> spNode = directory_tree::node::create(spParent, spXfile);
+			spParent->insert_sub_node(spNode->file()->m_path, spNode);
 		}
 
 		void directory_tree::erase( shared_ptr<xfile> spXfile )
 		{
-			shared_ptr<directory_tree_node> spParent = find_parent(spXfile);
+			shared_ptr<directory_tree::node> spParent = find_parent(spXfile);
 			if(spParent)
 			{
 				_for_each(spParent, std::bind(&directory_tree::_unparent, this, std::placeholders::_1));
@@ -34,16 +34,16 @@ namespace kingfile
 			}
 		}
 
-		void directory_tree::for_each( std::function<void(shared_ptr<directory_tree_node>)> func )
+		void directory_tree::for_each( std::function<void(shared_ptr<directory_tree::node>)> func )
 		{
-			deque<shared_ptr<directory_tree_node>>	dirNodeQueue;
+			deque<shared_ptr<directory_tree::node>>	dirNodeQueue;
 			dirNodeQueue.push_back(m_spRoot);
 			for(; dirNodeQueue.empty() == false;  )
 			{
-				shared_ptr<directory_tree_node> spDir = dirNodeQueue.front();
+				shared_ptr<directory_tree::node> spDir = dirNodeQueue.front();
 				dirNodeQueue.pop_front();
-				map<string, std::shared_ptr<directory_tree_node>> subItems = spDir->sub_items();
-				map<string, std::shared_ptr<directory_tree_node>>::iterator it = subItems.begin();
+				map<string, std::shared_ptr<directory_tree::node>> subItems = spDir->sub_items();
+				map<string, std::shared_ptr<directory_tree::node>>::iterator it = subItems.begin();
 				for( ;  it != subItems.end(); ++it)
 				{
 					if(it->second->file()->m_type == XFILE_FOLDER)
@@ -53,17 +53,17 @@ namespace kingfile
 			}
 		}
 
-		shared_ptr<directory_tree_node> directory_tree::find_parent( shared_ptr<xfile> spXfile )
+		shared_ptr<directory_tree::node> directory_tree::find_parent( shared_ptr<xfile> spXfile )
 		{
-			string parentPaht = spXfile->m_path.substr(0, spXfile->m_path.rfind('\\'));
+			string parentPaht = spXfile->m_path.substr(0, spXfile->m_path.rfind('/'));
 			return _find(parentPaht);
 		}
 
-		shared_ptr<directory_tree_node> directory_tree::_find( const string& path )
+		shared_ptr<directory_tree::node> directory_tree::_find( const string& path )
 		{
 			vector<string> ancestorsPath;
-			_path_split(path, '\\', ancestorsPath);
-			shared_ptr<directory_tree_node> spNode = m_spRoot;
+			_path_split(path, '/', ancestorsPath);
+			shared_ptr<directory_tree::node> spNode = m_spRoot;
 			for(int i = 0; i < ancestorsPath.size(); ++i)
 			{
 				spNode = spNode->find(ancestorsPath[i]);
@@ -74,20 +74,20 @@ namespace kingfile
 		}
 
 		void directory_tree::_for_each( 
-			shared_ptr<directory_tree_node> spRoot, 
-			std::function<void(shared_ptr<directory_tree_node>)> func )
+			shared_ptr<directory_tree::node> spRoot, 
+			std::function<void(shared_ptr<directory_tree::node>)> func )
 		{
 			if(spRoot->file()->is_directory() == false)
 				return;
 
-			deque<shared_ptr<directory_tree_node>>	dirNodeQueue;
+			deque<shared_ptr<directory_tree::node>>	dirNodeQueue;
 			dirNodeQueue.push_back(spRoot);
 			for(; dirNodeQueue.empty() == false;  )
 			{
-				shared_ptr<directory_tree_node> spDir = dirNodeQueue.front();
+				shared_ptr<directory_tree::node> spDir = dirNodeQueue.front();
 				dirNodeQueue.pop_front();
-				map<string, std::shared_ptr<directory_tree_node>> subItems = spDir->sub_items();
-				map<string, std::shared_ptr<directory_tree_node>>::iterator it = subItems.begin();
+				map<string, std::shared_ptr<directory_tree::node>> subItems = spDir->sub_items();
+				map<string, std::shared_ptr<directory_tree::node>>::iterator it = subItems.begin();
 				for( ;  it != subItems.end(); ++it)
 				{
 					if(it->second->file()->m_type == XFILE_FOLDER)
@@ -115,7 +115,7 @@ namespace kingfile
 			vec.push_back(splitPath);
 		}
 
-		shared_ptr<directory_tree_node> directory_tree::find( const string& path )
+		shared_ptr<directory_tree::node> directory_tree::find( const string& path )
 		{
 			return _find(path);
 		}
@@ -123,13 +123,12 @@ namespace kingfile
 		void directory_tree::clear()
 		{
 			for_each(std::bind(&directory_tree::_unparent,this, std::placeholders::_1));
-			//m_spRoot->clear();
 			shared_ptr<xfile> spXfile(new xfile());
-			m_spRoot.reset(new directory_tree_node());
+			m_spRoot.reset(new directory_tree::node());
 			m_spRoot->set_xfile(spXfile);
 		}
 
-		void directory_tree::_unparent( shared_ptr<directory_tree_node> spNode )
+		void directory_tree::_unparent( shared_ptr<directory_tree::node> spNode )
 		{
 			spNode->reset_parent();
 		}

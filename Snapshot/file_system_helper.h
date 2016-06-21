@@ -1,8 +1,8 @@
 #pragma once
 #include <set>
 #include <deque>
-#include <boost/filesystem.hpp>
 #include "xfile.h"
+#include <boost/filesystem.hpp>
 
 namespace kingfile
 {
@@ -16,5 +16,7 @@ namespace kingfile
 			std::string& strError);
 
 		bool enum_directory(const string& directory, vector<xfile_shared_ptr>& subItemsVec, std::string& strError);
+
+		bool make_dirs(const std::string& path, std::string& strError);
 	}
 }

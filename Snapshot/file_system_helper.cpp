@@ -67,5 +67,19 @@ namespace kingfile
 			}
 			return ret;
 		}
+
+		bool make_dirs( const std::string& path, std::string& strError )
+		{
+			bool ret;
+			try
+			{
+				ret = boost::filesystem::create_directories(path);
+			}catch(boost::filesystem::filesystem_error error)
+			{
+				strError = error.what();
+			}
+			return ret;
+		}
+
 	}
 }

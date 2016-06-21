@@ -10,6 +10,8 @@ namespace kingfile
 		class directory_tree
 		{
 		public:
+			typedef directory_tree_node<string> node;
+		public:
 			directory_tree(void);
 			~directory_tree(void);
 
@@ -17,17 +19,17 @@ namespace kingfile
 			void insert(shared_ptr<xfile> spXfile);
 			void erase(shared_ptr<xfile> spXfile);
 			void clear();
-			void for_each(std::function<void(shared_ptr<directory_tree_node>)> func);
-			shared_ptr<directory_tree_node> find_parent(shared_ptr<xfile> spXfile);
-			shared_ptr<directory_tree_node> find(const string& path);
+			void for_each(std::function<void(shared_ptr<node>)> func);
+			shared_ptr<node> find_parent(shared_ptr<xfile> spXfile);
+			shared_ptr<node> find(const string& path);
 		private:
-			shared_ptr<directory_tree_node> _find(const string& path);
-			void _for_each(shared_ptr<directory_tree_node> spRoot, std::function<void(shared_ptr<directory_tree_node>)> func);
+			shared_ptr<node> _find(const string& path);
+			void _for_each(shared_ptr<node> spRoot, std::function<void(shared_ptr<node>)> func);
 
 			void _path_split(const string& path, char split, vector<string>& vec);
-			void _unparent(shared_ptr<directory_tree_node> spNode);
+			void _unparent(shared_ptr<node> spNode);
 		private:
-			shared_ptr<directory_tree_node>		m_spRoot;
+			shared_ptr<node>		m_spRoot;
 		};
 	}
 }

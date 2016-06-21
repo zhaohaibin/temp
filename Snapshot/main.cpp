@@ -49,14 +49,24 @@ void filterLocalChange()
 	cout << "本地新增文件"<<spChangeFiles->m_addXfile.size() << "  本地更新文件"<<spChangeFiles->m_updateXfile.size();
 	cout << "本地删除文件"<<spChangeFiles->m_deleteXfile.size() << endl;
 }
+
+void copyFile(const string& targetPath)
+{
+	snapshot.copyLocalFile(targetPath);
+}
+
 int main()
 {
 	int write_db;
 	cin >>write_db;
 
 	loadSnapShot();
+	//copyFile("D:/target");
 	if(write_db == 1)
+	{
 		localSnapshotWriteToDb();
+		
+	}
 
 	for(int i = 0; i < 1000; ++i)
 	{

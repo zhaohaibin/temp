@@ -38,7 +38,8 @@ namespace kingfile
 
 				}
 				spXfile->m_path = path;
-				int pos = path.rfind('\\');
+				std::replace(spXfile->m_path.begin(), spXfile->m_path.end(), '\\', '/');
+				int pos = spXfile->m_path.rfind('/');
 				spXfile->m_name = path.substr(pos+1,path.size()-pos-1);
 				spXfile->m_mtime = boost::filesystem::last_write_time(path);
 			}catch(boost::filesystem::filesystem_error error)
@@ -52,5 +53,20 @@ namespace kingfile
 		{
 			return m_type == XFILE_FOLDER;
 		}
+
+		void xfile::to_json( Json::Value& jobj )
+		{
+			jobj["name"]		= m_name;
+			jobj["path"]		= m_path;
+			jobj["size"]		= m_size;
+			jobj["mtime"]	= m_mtime;
+			jobj["version"]	= m_version;
+			jobj["opver"]		= m_opVer;
+			jobj["xid"]			= m_xid;
+			jobj["pxid"]		= m_pxid;
+			jobj["type"]		= m_type;
+			jobj["sha1"]		= m_sha1;
+		}
+
 	}
 }

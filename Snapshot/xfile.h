@@ -2,6 +2,7 @@
 #include <string>
 #include <cstdint>
 #include <memory>
+#include "JsonCpp/json.h"
 using namespace std;
 
 namespace kingfile
@@ -24,6 +25,7 @@ namespace kingfile
 			static shared_ptr<xfile> create(const string& path);
 
 			bool is_directory();
+			void to_json(Json::Value& jobj);
 		public:
 			string			m_name;
 			string			m_path;
