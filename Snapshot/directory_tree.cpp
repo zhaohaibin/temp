@@ -27,7 +27,7 @@ namespace kingfile
 				spParent->insert_sub_node(spNode->file()->m_path, spNode);
 				ret = true;
 			}
-			return false;
+			return ret;
 		}
 
 		void directory_tree::erase( shared_ptr<xfile> spXfile )

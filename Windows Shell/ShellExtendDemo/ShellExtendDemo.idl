@@ -1,0 +1,32 @@
+// ShellExtendDemo.idl : ShellExtendDemo 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(ShellExtendDemo.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(4F2AD4AF-817B-40E6-A59C-AEB34562B387),
+	pointer_default(unique)
+]
+interface IUserContextMenu : IUnknown{
+};
+[
+	uuid(B4071712-4CBD-4DA2-9533-2FB53D705FF3),
+	version(1.0),
+]
+library ShellExtendDemoLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(052BD344-BC59-432D-B279-F0699CB0AFDC)		
+	]
+	coclass UserContextMenu
+	{
+		[default] interface IUserContextMenu;
+	};
+};
+
